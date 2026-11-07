@@ -1,0 +1,14 @@
+{
+  "domain": "h0wald_home",
+  "name": "H0walD Home",
+  "codeowners": ["@H0walD"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "panel_custom", "lovelace"],
+  "documentation": "https://github.com/H0walD/h0wald-home",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/H0walD/h0wald-home/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
+}

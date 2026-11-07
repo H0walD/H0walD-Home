@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "H0walD Home",
+        "description": "Fügt den Dashboard-Editor „H0walD Home“ in der Seitenleiste hinzu (nur für Administratoren sichtbar)."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "H0walD Home ist bereits eingerichtet."
+    }
+  }
+}

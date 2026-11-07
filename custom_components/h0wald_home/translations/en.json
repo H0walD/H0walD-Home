@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "H0walD Home",
+        "description": "Adds the H0walD Home dashboard editor to the sidebar (visible to administrators only)."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "H0walD Home is already set up."
+    }
+  }
+}
