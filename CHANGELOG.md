@@ -1,5 +1,12 @@
 # Änderungen
 
+## 1.5.1 – Hintergrund und eigener Schatten
+
+### Neu
+- **Abschnitt-Hintergrund für alle Räume auf einmal:** „Wie in Home Assistant eingestellt“, eine Farbe mit Deckkraft (gleiche Farben wie in HA) oder keiner.
+- **Kachel-Hintergrund** für Raum- und Lampen-Kacheln: Glas (Standard), eigene Farbe mit Deckkraft oder durchsichtig. Die Glas-Unschärfe lässt sich ein- und ausschalten.
+- **Eigener Schatten:** Größe (Unschärfe), Abstand nach unten, Stärke und Farbe per Schieberegler und Farbwähler.
+
 ## 1.5.0 – Rahmen, Schatten und Ecken
 
 ### Neu
