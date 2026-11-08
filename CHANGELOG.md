@@ -1,5 +1,15 @@
 # Änderungen
 
+## 1.4.0 – Brandmelder-Symbole, Lampengruppen und Lampen entfernen
+
+### Neu
+- **Brandmelder-Darstellung im Kachel-Design:** Wahlweise wie bisher als **Text unter dem Raumnamen** oder als **Symbol mit Farbe** direkt unter dem Raumnamen (antippen öffnet den Brandmelder).
+- **Für jeden Zustand einstellbar** (Alles OK, Offline, Alarm): eigenes MDI-Symbol (z. B. `mdi:smoke-detector`), eigene Farbe per Farbwähler und eigener Text. Vorschläge für passende Symbole erscheinen beim Tippen.
+- Text neben dem Symbol ein- oder ausblendbar.
+- Wie alle Design-Einstellungen gilt das für alle Räume oder nur für einen Raum, mit Live-Vorschau.
+- **Lampengruppe per Klick erstellen:** Im Raum-Editor legt „Lampengruppe aus den Lampen erstellen“ in Home Assistant eine Licht-Gruppe mit allen eingetragenen Lampen an, ordnet sie dem Bereich des Raums zu und trägt sie als „Ganzer Raum“ ein.
+- **Lampen aus einem Bereich entfernen:** Im Bereichs-Manager hat jede Lampe ein ✕. Zweimal klicken entfernt sie aus dem Bereich (sie landet unter „Lampen ohne Bereich“) und aus dem Raum im Editor. Erbt die Lampe ihren Bereich vom Gerät, wird das Gerät aus dem Bereich genommen; die Meldung sagt dann, wie viele Lampen betroffen sind.
+
 ## 1.3.1 – Lampen ohne eigenen Namen verschieben
 
 ### Behoben
