@@ -35,10 +35,12 @@
 - **Räume** anlegen, sortieren und einem Geschoss zuordnen.
 - **Ziehen & Ablegen:** Geschosse, Räume, Lampen und Szenen am Griff ⠿ sortieren (auch per Touch und mit den Pfeiltasten). Einen Raum auf ein Geschoss ziehen verschiebt ihn, eine Lampe auf einen anderen Raum ziehen verschiebt sie, eine Szene auf einen Raum ziehen kopiert sie.
 - **Live-Vorschau** des gewählten Raums mit echten Zuständen aus Home Assistant. Antippen eines Elements springt zum passenden Feld, Lampen und Szenen lassen sich direkt in der Vorschau sortieren.
+- **Kachel-Design:** Inhalt, Reihenfolge, Rahmen, Leuchten, Lampen-Symbole und Lampen-Kacheln für alle Räume oder einzeln einstellen, mit Live-Vorschau.
+- **Neues Dashboard per Klick** inklusive Helfern, mit Auswahl, wer es sehen darf.
 - **Szenen-Editor:** Name, Symbol, Helligkeit, Farbtemperatur oder eine HA-Szene.
 - **Im Dashboard speichern**, vorher wird automatisch eine Sicherung angelegt (herunterladbar).
 - **Fehlende Helfer anlegen** per Klick, ohne `configuration.yaml`.
-- **HA-Bereiche verwalten:** Lampen per Ziehen oder Auswahl in andere Bereiche verschieben, Lampen ohne Bereich zuordnen, Bereiche in ein anderes Geschoss legen, neue Bereiche und Geschosse anlegen. Der Editor zieht die Räume automatisch nach.
+- **HA-Bereiche verwalten:** Bereiche und Geschosse umbenennen, Lampen per Ziehen oder Auswahl in andere Bereiche verschieben, Lampen ohne Bereich zuordnen, Bereiche in ein anderes Geschoss legen, neue Bereiche und Geschosse anlegen. Der Editor zieht die Räume automatisch nach.
 - **Editor als Tab im Dashboard:** Auf Wunsch kommt der Editor als eigener Tab (nur für dich sichtbar) direkt in dein Dashboard. Als Karte heißt er `custom:h0wald-home-card`.
 - Hell- und Dunkelmodus wie in Home Assistant.
 
@@ -72,7 +74,7 @@ Den Ordner `custom_components/h0wald_home` nach `/config/custom_components/` kop
 
 1. **Dashboard wählen** und **Dashboard laden**, wenn du ein bestehendes weiter bearbeiten willst.
 2. **Bereiche aufräumen (optional):** Unter „HA-Bereiche, Lampen & Geschosse verwalten“ Lampen und Bereiche richtig zuordnen. Das wird sofort in Home Assistant gespeichert.
-3. **Geschosse & Bereiche übernehmen:** legt aus deinen HA-Bereichen Geschosse und Räume an. Bereits vorhandene Räume (gleicher Name) werden nur ergänzt, nichts wird überschrieben. Bereiche ohne Lampen werden übersprungen.
+3. **Geschosse & Bereiche übernehmen:** legt aus deinen HA-Bereichen Geschosse und Räume an. Bereits vorhandene Räume (gleicher Name) werden ergänzt: neue Lampen und Brandmelder kommen dazu, leere Fühler-Felder werden gefüllt, nichts wird überschrieben. Bereiche nur mit Fühlern oder Brandmeldern werden als Raum ohne Lampen angelegt.
 4. **Geschosse bearbeiten:** In der Leiste wählen oder mit **+ Geschoss** anlegen. Name, Pfad und Symbol festlegen, mit ← → sortieren.
 5. **Räume bearbeiten:** Lampengruppe, Lampen, Fühler, Brandmelder und Szenen prüfen. Sortieren geht am Griff ⠿ per Ziehen. Einen Raum verschiebst du, indem du ihn auf ein Geschoss oben ziehst (oder über **Geschoss**).
 6. **Fehlende Helfer anlegen:** erstellt pro Raum einen Schalter `input_boolean.lampen_…`, der sich merkt, ob die Lampen aufgeklappt sind.

@@ -1,5 +1,41 @@
 # Änderungen
 
+## 1.3.0 – Kachel-Design und neues Dashboard per Klick
+
+### Neu
+- **Kachel-Design bearbeiten:** Im Raum-Editor gibt es den Bereich „Kachel-Design“. Jede Einstellung gilt wahlweise **für alle Räume** oder **nur für einen Raum**. Eigene Werte eines Raums sind markiert und lassen sich mit „Wie alle Räume“ zurücksetzen. Die Vorschau zeigt jede Änderung sofort.
+  - **Inhalt der Kachel:** Art, Temperatur, Feuchte, Brandmelder-Status, Helligkeitsregler, Regler-Knopf, Szenen-Knöpfe und das Aufklappen der Lampen einzeln ein- und ausschalten.
+  - **Reihenfolge:** Raum-Kachel, Szenen-Knöpfe und Lampen-Kacheln per Ziehen anordnen.
+  - **Raum-Kachel:** Rahmen ein/aus, Leuchten wenn Licht an ist ein/aus, Leuchtfarbe (Farbe der Lampen oder Warmweiß), Breite im Dashboard (1 oder 2 Spalten).
+  - **Lampen-Symbole:** Position (in der Raum-Kachel, eigene Zeile darüber oder ausgeblendet), Aussehen (Punkt, Glühbirne oder Symbol der Lampe), Größe (klein, mittel, groß) und Farbe wenn an (Bernstein, Gelb, Orange, Weiß oder die Farbe der Lampe).
+  - **Lampen-Kacheln:** 1 bis 4 pro Zeile, Aufbau Standard, waagrecht oder senkrecht. Szenen-Knöpfe mittig oder links.
+- **Raum-Symbol per Auswahl:** Häufige Symbole (Sofa, Bett, Küche, Bad …) direkt anklicken.
+- **Räume nebeneinander pro Geschoss:** Im Geschoss-Editor einstellen, wie viele Räume höchstens nebeneinander stehen.
+- **Neues Dashboard mit Helfern erstellen:** Ein Klick legt ein neues Dashboard an, übernimmt Geschosse und Bereiche, erstellt die Schalter-Helfer und speichert alles.
+- **Wer sieht das Dashboard:** Alle Benutzer, nur Administratoren oder ausgewählte Benutzer. Wird beim Erstellen und beim Speichern übernommen.
+- **Lampe in der Vorschau entfernen:** Jede Lampen-Kachel in der Vorschau hat ein ✕.
+
+### Technisch
+- Design-Einstellungen, Sichtbarkeit und die Zuordnung zu HA-Bereichen werden im Dashboard selbst gespeichert (Schlüssel `h0wald_home`). Nach dem Laden ist alles wieder da, auch auf anderen Geräten.
+
+## 1.2.2 – Bereiche und Geschosse umbenennen
+
+### Neu
+- **Bereiche umbenennen:** Im Bereichs-Manager auf den Namen eines Bereichs klicken (✎), neuen Namen eingeben und mit Enter bestätigen. Der Name wird sofort in Home Assistant geändert. Der zugehörige Raum im Editor wird mit umbenannt, wenn er bisher gleich hieß.
+- **Geschosse umbenennen:** Genauso über den Geschoss-Namen im Bereichs-Manager. Das passende Geschoss im Editor wird mit umbenannt.
+- **Raumname nach Home Assistant übernehmen:** Ist ein Raum mit einem HA-Bereich verknüpft, gibt es im Raum-Editor den Knopf „Name auch als HA-Bereich übernehmen“.
+
+## 1.2.1 – Leere Räume bearbeiten
+
+### Behoben
+- **Räume ohne Lampen sind jetzt bearbeitbar.** Bisher wurde ein Raum ohne Einzellampen beim Laden gesperrt („bleibt unverändert“), sodass man nichts hinzufügen konnte. Jetzt kannst du dort jederzeit Lampen, Fühler, Brandmelder und Szenen ergänzen.
+- **Räume nur mit Fühlern oder Brandmeldern** (z. B. Bad, Flur) werden im Dashboard als Raumname mit Temperatur, Feuchte und Brandmelder-Status angezeigt, ohne leere Lampen-Karte.
+
+### Neu
+- **Gesperrten Abschnitt umwandeln:** Fremde Abschnitte, die unverändert übernommen werden, lassen sich per Knopf in einen bearbeitbaren Raum umwandeln.
+- **„Geschosse & Bereiche übernehmen“ ergänzt neue Geräte:** Bei bestehenden Räumen kommen neu zugeordnete Lampen und Brandmelder automatisch dazu. Bereiche ohne Lampen, aber mit Fühlern oder Brandmeldern werden nicht mehr übersprungen.
+- Schalter-Helfer werden nur noch für Räume mit Lampen angelegt.
+
 ## 1.2.0 – Ziehen & Ablegen und Live-Vorschau
 
 Der Editor lässt sich jetzt fast komplett mit der Maus oder dem Finger bedienen.
