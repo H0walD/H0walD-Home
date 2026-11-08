@@ -1,4 +1,4 @@
-/*! H0walD Home 1.4.0 · Dashboard-Editor für Home Assistant · MIT-Lizenz
+/*! H0walD Home 1.5.0 · Dashboard-Editor für Home Assistant · MIT-Lizenz
  *  Enthält js-yaml 4.1.0 (MIT, github.com/nodeca/js-yaml) */
 (function(){
 /*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
@@ -22,10 +22,17 @@ Object.assign(ICONS,{'lightbulb':'M12,2A7,7 0 0,0 5,9C5,11.38 6.19,13.47 8,14.74
  'circle':'M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z','circle-outline':'M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z',
  'tune-variant':'M8,13C6.14,13 4.59,14.28 4.14,16H2V18H4.14C4.59,19.72 6.14,21 8,21C9.86,21 11.41,19.72 11.86,18H22V16H11.86C11.41,14.28 9.86,13 8,13M8,19C6.9,19 6,18.1 6,17C6,15.9 6.9,15 8,15C9.1,15 10,15.9 10,17C10,18.1 9.1,19 8,19M19.86,6C19.41,4.28 17.86,3 16,3C14.14,3 12.59,4.28 12.14,6H2V8H12.14C12.59,9.72 14.14,11 16,11C17.86,11 19.41,9.72 19.86,8H22V6H19.86M16,9C14.9,9 14,8.1 14,7C14,5.9 14.9,5 16,5C17.1,5 18,5.9 18,7C18,8.1 17.1,9 16,9Z'});
 const STYLE_DEF={showKind:true,showTemp:true,showHum:true,showSmoke:true,showBri:true,showTune:true,showScenes:true,expand:true,order:['group','scenes','lamps'],
- lampCols:6,lampLayout:'default',span:1,frame:true,glow:true,glowColor:'light',dots:'group',dotIcon:'circle',dotSize:14,dotColor:'amber',sceneAlign:'center',
+ lampCols:6,lampLayout:'default',span:1,frame:true,glow:true,glowColor:'light',dots:'group',dotIcon:'circle',dotSize:14,dotColor:'amber',sceneAlign:'center',borderW:1,borderColor:'#ffffff',borderAlpha:12,shadow:'medium',radius:22,tileFrame:true,
  smokeMode:'text',smokeLabel:true,smokeOkIcon:'mdi:shield-check',smokeOkColor:'#4CAF50',smokeOkText:'🛡️ Rauchmelder OK',
  smokeOffIcon:'mdi:smoke-detector-off',smokeOffColor:'#FF9800',smokeOffText:'⚠️ Rauchmelder offline',smokeAlarmIcon:'mdi:fire',smokeAlarmColor:'#F44336',smokeAlarmText:'🔥 Brandalarm!'};
 const SMOKE_ICONS=['mdi:smoke-detector','mdi:smoke-detector-variant','mdi:smoke-detector-alert','mdi:smoke-detector-variant-alert','mdi:smoke-detector-off','mdi:smoke-detector-variant-off','mdi:smoke-detector-outline','mdi:shield-check','mdi:shield-home','mdi:shield-alert','mdi:check-circle','mdi:check-decagram','mdi:fire','mdi:fire-alert','mdi:alarm-light','mdi:alert','mdi:alert-circle','mdi:wifi-off','mdi:lan-disconnect','mdi:help-circle'];
+const SHADOWS={none:'',weak:'0 4px 12px rgba(0,0,0,0.30)',medium:'0 12px 30px rgba(0,0,0,0.50)',strong:'0 18px 44px rgba(0,0,0,0.75)'};
+const hexRgb=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(String(h||''));const n=m?parseInt(m[1],16):0xffffff;return[(n>>16)&255,(n>>8)&255,n&255]};
+const bCol=E=>`rgba(${hexRgb(E.borderColor).join(',')},${(+E.borderAlpha||0)/100})`;
+const bLine=E=>+E.borderW>0?`${+E.borderW}px solid ${bCol(E)}`:'none';
+const dropSh=E=>SHADOWS[E.shadow]||'';
+function tileCss(E){const sh=['inset 0 1px 0 rgba(255,255,255,0.30)','inset 0 -10px 24px rgba(0,0,0,0.18)',dropSh(E)].filter(Boolean).join(', ');
+ return `ha-card {\n  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.03) 100%) !important;\n  backdrop-filter: blur(16px) saturate(150%);\n  -webkit-backdrop-filter: blur(16px) saturate(150%);\n  border: ${bLine(E)} !important;\n  border-radius: ${+E.radius}px !important;\n  box-shadow: ${sh} !important;\n}\n`}
 const jq=t=>String(t||'').replace(/'/g,'’');
 const noEmo=t=>String(t||'').replace(/^[^\p{L}\p{N}]+/u,'');
 function smokeTpl(m,a,o,k){return `{% set m = ${m} %}{{ '${jq(a)}' if m | select('is_state', 'on') | list | count > 0 else ('${jq(o)}' if m | select('is_state', 'unavailable') | list | count > 0 else '${jq(k)}') }}`}
@@ -65,7 +72,8 @@ function parseSection(sec,MR){MR=MR||{};
  const smoke=[...new Set([...sp.matchAll(/binary_sensor\.[a-z0-9_]+/g)].map(m=>m[0]))];
  const sens=[...parts.filter(x=>x!==sp).join(' · ').matchAll(/states\(['"](sensor\.[a-z0-9_]+)['"]\)/g)].map(m=>m[1]);
  const scenes=cards.find(c=>c.type==='custom:mushroom-chips-card'&&(c.chips||[]).some(x=>x.tap_action&&/perform-action|call-service/.test(x.tap_action.action||'')));
- const R0={title,kind:parts[0]&&!parts[0].includes('{')?parts[0]:'',smoke,temp:sens[0]||'',hum:sens[1]||'',group:group?group.entity:'',groupName:group?group.name||'':'Ganzer Raum',icon:group?group.icon||'':'mdi:lightbulb-group',
+ const secExtra={};Object.keys(sec).forEach(k=>{if(k!=='type'&&k!=='cards')secExtra[k]=clone(sec[k])});
+ const R0={secExtra,title,kind:parts[0]&&!parts[0].includes('{')?parts[0]:'',smoke,temp:sens[0]||'',hum:sens[1]||'',group:group?group.entity:'',groupName:group?group.name||'':'Ganzer Raum',icon:group?group.icon||'':'mdi:lightbulb-group',
   helper:helper||'lampen_'+slug(title),lamps:lamps.map(c=>({entity:c.entity,name:c.name||'',icon:c.icon||''})),scenes:scenes?clone(scenes):(bare?defScenes():null),origGroup:group?group.entity:TG};
  if(m){['kind','temp','hum'].forEach(k=>{if(typeof m[k]==='string')R0[k]=m[k]});if(Array.isArray(m.smoke))R0.smoke=m.smoke;if(m.style)R0.style=m.style;if(m.area)R0.areaId=m.area;
   if(!R0.lamps.length&&Array.isArray(m.lamps))R0.lamps=m.lamps;if(!scenes&&m.scenes){R0.scenes=m.scenes;R0.origGroup=m.origGroup||R0.origGroup}}
@@ -115,17 +123,19 @@ function dotChip(l,E){const e=l.entity,on=`is_state('${e}','on')`;
  const ic=E.dotIcon==='bulb'?`{{ 'mdi:lightbulb' if ${on} else 'mdi:lightbulb-outline' }}`:E.dotIcon==='lamp'?(l.icon||`{{ state_attr('${e}','icon') or 'mdi:lightbulb' }}`):`{{ 'mdi:circle' if ${on} else 'mdi:circle-outline' }}`;
  const col=E.dotColor==='light'?`{% set c = state_attr('${e}','rgb_color') %}{{ ('rgb(%d,%d,%d)' | format(c[0], c[1], c[2])) if ${on} and c else ('amber' if ${on} else 'white') }}`:`{{ '${DOTCOL[E.dotColor]||'amber'}' if ${on} else 'white' }}`;
  const c=JSON.parse(JSON.stringify(TPL.section.cards[1].cards[2].chips[0]).split(TL).join(e));c.icon=ic;c.icon_color=col;c.card_mod.style=c.card_mod.style.split('18px').join((+E.dotSize+4)+'px');return c}
-function stackStyle(grp,E,inner,P){let s="#root {\n  overflow: hidden;\n  row-gap: 0;\n  display: grid !important;\n  grid-template-columns: minmax(0, 1fr) 56px !important;\n  align-items: center;\n  border-radius: var(--ha-card-border-radius, 22px);\n  transition: background 0.4s, box-shadow 0.4s;\n";
- if(E.frame)s+="  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.03) 100%);\n  backdrop-filter: blur(16px) saturate(150%);\n  -webkit-backdrop-filter: blur(16px) saturate(150%);\n  border: 1px solid rgba(255,255,255,0.12);\n  border-top-color: rgba(255,255,255,0.38);\n  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -10px 24px rgba(0,0,0,0.18), 0 12px 30px rgba(0,0,0,0.50);\n";
+function stackStyle(grp,E,inner,P){let s=`#root {\n  overflow: hidden;\n  row-gap: 0;\n  display: grid !important;\n  grid-template-columns: minmax(0, 1fr) 56px !important;\n  align-items: center;\n  border-radius: ${+E.radius}px;\n  transition: background 0.4s, box-shadow 0.4s;\n`;
+ if(E.frame){const def=+E.borderW===1&&String(E.borderColor).toLowerCase()==='#ffffff'&&+E.borderAlpha===12;s+="  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.03) 100%);\n  backdrop-filter: blur(16px) saturate(150%);\n  -webkit-backdrop-filter: blur(16px) saturate(150%);\n"+`  border: ${bLine(E)};\n`+(def?"  border-top-color: rgba(255,255,255,0.38);\n":"")+`  box-shadow: ${['inset 0 1px 0 rgba(255,255,255,0.30)','inset 0 -10px 24px rgba(0,0,0,0.18)',dropSh(E)].filter(Boolean).join(', ')};\n`}
  if(E.glow){const c=E.glowColor==='light'?`state_attr('${grp}', 'rgb_color') or [255, 190, 90]`:'[255, 190, 90]';
-  s+=`{%- if is_state('${grp}', 'on') %}{% set c = ${c} %}\n  background: linear-gradient(160deg, rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.55) 0%, rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.18) 65%, rgba(255,255,255,0.06) 100%);\n  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 30px rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.60), 0 12px 30px rgba(0,0,0,0.50);\n  border: 1px solid rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.75);\n{%- endif %}\n`}
+  s+=`{%- if is_state('${grp}', 'on') %}{% set c = ${c} %}\n  background: linear-gradient(160deg, rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.55) 0%, rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.18) 65%, rgba(255,255,255,0.06) 100%);\n  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 30px rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.60)${dropSh(E)?', '+dropSh(E):''};\n  border: ${Math.max(1,+E.borderW)}px solid rgba({{ c[0] }}, {{ c[1] }}, {{ c[2] }}, 0.75);\n{%- endif %}\n`}
  s+="}\n#root > card-mod { display: none !important; }\n#root > * { min-width: 0 !important; margin: 0 !important; }\n";
  inner.forEach((c,i)=>{const col=c===P.g?(inner.includes(P.tune)?'1':'1 / -1'):c===P.dots?'1':'2';s+=`#root > :nth-child(${i+1} of :not(card-mod)) { grid-column: ${col} !important; }\n`});return s}
 function buildSection(r){
  if(r.locked)return clone(r.raw);
  const E=effStyle(r),s=clone(TPL.section),hasL=!!r.group||r.lamps.some(l=>l.entity);
  const t=s.cards[0];t.title=r.title;const sb=subtitle(r,E);if(sb)t.subtitle=sb;else delete t.subtitle;
- if(+E.span===2)s.column_span=2;const smc=smokeCard(r,E);
+ if(r.secExtra)Object.keys(r.secExtra).forEach(k=>{if(!(k in s))s[k]=clone(r.secExtra[k])});
+ if('span' in ((st&&st.style)||{})||'span' in (r.style||{})){if(+E.span>1)s.column_span=+E.span;else delete s.column_span}
+ const smc=smokeCard(r,E);
  if(!hasL){s.cards=[t,...smc];return s}
  const helper='input_boolean.'+r.helper,grp=r.group||'light.bitte_gruppe_eintragen';
  const hs=JSON.parse(JSON.stringify(s.cards[1]).split(TG).join(grp).split(TH).join(helper));
@@ -136,7 +146,7 @@ function buildSection(r){
  dots.card_mod.style=E.dots==='row'?pst.replace('margin-top: -6px;\n','').replace('padding: 0 0 8px 64px;','padding: 0 0 6px 6px;'):pst;
  const inner=[g];if(E.showTune)inner.push(tune);if(E.dots==='group'&&L.length)inner.push(dots);if(E.expand)inner.push(chev);
  hs.cards=inner;hs.card_mod.style=stackStyle(grp,E,inner,{g,tune,dots,chev});
- const lamps=E.expand?L.map(l=>{const c=clone(TPL.lamp);c.entity=l.entity;if(l.name)c.name=l.name;else delete c.name;if(l.icon)c.icon=l.icon;else delete c.icon;c.grid_options={columns:+E.lampCols||6};if(E.lampLayout&&E.lampLayout!=='default')c.layout=E.lampLayout;c.visibility=[{condition:'state',entity:helper,state:'on'}];return c}):[];
+ const lamps=E.expand?L.map(l=>{const c=clone(TPL.lamp);c.entity=l.entity;if(l.name)c.name=l.name;else delete c.name;if(l.icon)c.icon=l.icon;else delete c.icon;c.grid_options={columns:+E.lampCols||6};if(E.tileFrame)c.card_mod.style['.']=tileCss(E);if(E.lampLayout&&E.lampLayout!=='default')c.layout=E.lampLayout;c.visibility=[{condition:'state',entity:helper,state:'on'}];return c}):[];
  const scenes=E.showScenes&&r.scenes?JSON.parse(JSON.stringify(r.scenes).replace(new RegExp(reEsc(r.origGroup||TG)+'(?![a-z0-9_])','g'),grp)):null;if(scenes)scenes.alignment=E.sceneAlign==='start'?'start':'center';
  const B={group:E.dots==='row'&&L.length?[dots,hs]:[hs],scenes:scenes&&scenes.chips&&scenes.chips.length?[scenes]:[],lamps};
  s.cards=[t,...smc];(Array.isArray(E.order)?E.order:STYLE_DEF.order).forEach(k=>s.cards.push(...(B[k]||[])));return s}
@@ -260,15 +270,15 @@ function previewInner(r){if(!r||r.locked)return'';const E=effStyle(r);
  const L=r.lamps.map((l,j)=>({l,j})).filter(x=>x.l.entity),ch=(r.scenes&&r.scenes.chips)||[],hasL=!!r.group||L.length;
  const lvl=e=>{const s=S(e);if(!s)return'';if(s.state==='unavailable')return'nicht erreichbar';if(s.state!=='on')return'Aus';const b=s.attributes.brightness;return b!=null?Math.round(b/2.55)+' %':'An'};
  const dots=L.map(x=>pvDot(x.l,E,S)).join(''),gs=S(r.group),gOn=isOn(r.group);
- let pgSt='';if(E.glow&&gOn){const c=(E.glowColor==='light'&&gs.attributes.rgb_color)||[255,190,90],k=c.join(',');pgSt=`background:linear-gradient(160deg,rgba(${k},.55),rgba(${k},.18) 65%,rgba(255,255,255,.06));border-color:rgba(${k},.75);box-shadow:0 0 26px rgba(${k},.55)`}
+ const boxSt=`border:${bLine(E)};border-radius:${+E.radius}px;box-shadow:${dropSh(E)||'none'};`,tileSt=E.tileFrame?boxSt:'';let pgSt='';if(E.glow&&gOn){const c=(E.glowColor==='light'&&gs.attributes.rgb_color)||[255,190,90],k=c.join(',');pgSt=`background:linear-gradient(160deg,rgba(${k},.55),rgba(${k},.18) 65%,rgba(255,255,255,.06));border-color:rgba(${k},.75);box-shadow:0 0 26px rgba(${k},.55)`}
  const bri=gs&&gOn&&gs.attributes.brightness!=null?Math.round(gs.attributes.brightness/2.55):(gOn?100:0);
- const grpB=`${E.dots==='row'&&L.length?`<div class="pd prow">${dots}</div>`:''}<div class="pg${E.frame?'':' nof'}${gOn?' on':''}" style="${pgSt}" data-fx="[data-k=group]"><div class="pgr${gOn?' on':''}"><span class="pi">${hico(r.icon||'mdi:lightbulb-group')}</span><span style="min-width:0;flex:1"><b>${esc(r.groupName||'Ganzer Raum')}</b>${E.showBri?`<span class="pbar"><i style="width:${bri}%"></i></span>`:''}</span>${E.showTune?`<span class="ptune">${ico('tune-variant')}</span>`:''}</div>
+ const grpB=`${E.dots==='row'&&L.length?`<div class="pd prow">${dots}</div>`:''}<div class="pg${E.frame?'':' nof'}${gOn?' on':''}" style="${E.frame?boxSt:''}${pgSt}" data-fx="[data-k=group]"><div class="pgr${gOn?' on':''}"><span class="pi">${hico(r.icon||'mdi:lightbulb-group')}</span><span style="min-width:0;flex:1"><b>${esc(r.groupName||'Ganzer Raum')}</b>${E.showBri?`<span class="pbar"><i style="width:${bri}%"></i></span>`:''}</span>${E.showTune?`<span class="ptune">${ico('tune-variant')}</span>`:''}</div>
   ${(E.dots==='group'&&L.length)||E.expand?`<div class="pgr2"><span class="pd" style="margin:0">${E.dots==='group'?dots:''}</span>${E.expand?'<span class="pchev">⌄</span>':''}</div>`:''}</div>`;
  const scB=E.showScenes&&ch.length?`<div class="pc" id="pvChips" data-axis="x" style="justify-content:${E.sceneAlign==='start'?'flex-start':'center'}">${ch.map((c,j)=>`<span class="dh" data-dk="scene" data-di="${j}" data-fx="[data-s='${j}'][data-sk=content]">${esc(c.content||'Szene')}</span>`).join('')}</div>`:'';
  const n=Math.max(1,Math.round(12/(+E.lampCols||6)));
- const lmB=E.expand&&L.length?`<div class="pv-lamps" id="pvLamps" data-axis="x" style="grid-template-columns:repeat(${n},minmax(0,1fr))">${L.map(({l,j})=>`<div class="pl dh${E.lampLayout==='vertical'?' v':''}${isOn(l.entity)?' on':''}" data-dk="lamp" data-di="${j}" data-fx="[data-l='${j}'][data-lk=name]"><span class="pi">${hico(l.icon||'mdi:lightbulb-outline')}</span><span style="min-width:0;flex:1"><b>${esc(l.name||fnm(l.entity)||l.entity)}</b><small>${esc(lvl(l.entity)||l.entity)}</small></span><button class="grip" tabindex="-1" aria-hidden="true">⠿</button><button class="pdel" data-pvdel="${j}" aria-label="${esc(l.name||fnm(l.entity)||l.entity)} entfernen" title="Aus dem Raum entfernen">✕</button></div>`).join('')}</div>`:'';
+ const lmB=E.expand&&L.length?`<div class="pv-lamps" id="pvLamps" data-axis="x" style="grid-template-columns:repeat(${n},minmax(0,1fr))">${L.map(({l,j})=>`<div class="pl dh${E.lampLayout==='vertical'?' v':''}${isOn(l.entity)?' on':''}" style="${tileSt}" data-dk="lamp" data-di="${j}" data-fx="[data-l='${j}'][data-lk=name]"><span class="pi">${hico(l.icon||'mdi:lightbulb-outline')}</span><span style="min-width:0;flex:1"><b>${esc(l.name||fnm(l.entity)||l.entity)}</b><small>${esc(lvl(l.entity)||l.entity)}</small></span><button class="grip" tabindex="-1" aria-hidden="true">⠿</button><button class="pdel" data-pvdel="${j}" aria-label="${esc(l.name||fnm(l.entity)||l.entity)} entfernen" title="Aus dem Raum entfernen">✕</button></div>`).join('')}</div>`:'';
  const B={group:hasL?grpB:'<p style="margin:6px 0 0;color:rgba(255,255,255,.6);font-size:12.5px">Noch keine Lampen. Im Dashboard erscheint nur der Raumname mit Fühlern und Brandmeldern.</p>',scenes:hasL?scB:'',lamps:lmB};
- return `<div class="ph">${+E.span===2?'<span class="pbadge">2 Spalten breit</span>':''}<small>Vorschau · antippen zum Bearbeiten · ziehen zum Sortieren</small></div>
+ return `<div class="ph">${+E.span>1?`<span class="pbadge">${({2:'Doppelt',3:'Dreifach',4:'Volle Breite'})[+E.span]}</span>`:''}<small>Vorschau · antippen zum Bearbeiten · ziehen zum Sortieren</small></div>
  <h3 data-fx="[data-k=title]">${esc(r.title)||'(ohne Namen)'}</h3><div class="ps" data-fx="[data-k=temp]">${sub.join(' · ')}</div>${smB}
  ${(Array.isArray(E.order)?E.order:STYLE_DEF.order).map(k=>B[k]||'').join('\n')}`}
 /* ---------- Kachel-Design ---------- */
@@ -282,7 +292,12 @@ function designHTML(r){const room=st.dsgScope==='room',E=effStyle(r),G={...STYLE
  <div class="dgrid">
   <div><h3 class="dh3">Inhalt der Kachel</h3>${cb('showKind','Art (Raum/Zone)')}${cb('showTemp','Temperatur')}${cb('showHum','Feuchte')}${cb('showSmoke','Brandmelder-Status')}${cb('showBri','Helligkeitsregler')}${cb('showTune','Regler-Knopf')}${cb('showScenes','Szenen-Knöpfe')}${cb('expand','Lampen zum Aufklappen')}</div>
   <div><h3 class="dh3">Reihenfolge${mark('order')}</h3><div class="ord" id="ordList">${ord.map((k,i)=>`<div class="oi" data-dk="block" data-di="${i}"><button class="grip" aria-label="${ON[k]} verschieben (ziehen oder Pfeiltasten)">⠿</button>${ON[k]}</div>`).join('')}</div>
-   <h3 class="dh3">Raum-Kachel</h3>${cb('frame','Rahmen um die Kachel')}${cb('glow','Leuchten, wenn Licht an ist')}${sl('glowColor','Leuchtfarbe',[['light','Farbe der Lampen'],['amber','Warmweiß']])}${sl('span','Breite im Dashboard',[[1,'1 Spalte'],[2,'2 Spalten (breit)']])}</div>
+   <h3 class="dh3">Raum-Kachel</h3>${cb('frame','Rahmen um die Kachel')}${cb('glow','Leuchten, wenn Licht an ist')}${sl('glowColor','Leuchtfarbe',[['light','Farbe der Lampen'],['amber','Warmweiß']])}${sl('span','Breite im Dashboard',[[1,'Einfach'],[2,'Doppelt'],[3,'Dreifach'],[4,'Volle Breite']])}
+   ${sl('borderW','Rahmenbreite',[[0,'Kein Rahmen'],[1,'1 px'],[2,'2 px'],[3,'3 px'],[4,'4 px']])}
+   <div class="row" style="gap:10px;align-items:end"><label class="f" style="flex:0 0 70px">Farbe${mark('borderColor')}<input type="color" data-st="borderColor" value="${esc(/^#[0-9a-f]{6}$/i.test(V('borderColor'))?V('borderColor'):'#ffffff')}" style="height:36px;padding:2px"></label><div style="flex:1">${sl('borderAlpha','Deckkraft',[[12,'12 %'],[25,'25 %'],[50,'50 %'],[75,'75 %'],[100,'100 %']])}</div></div>
+   ${sl('shadow','Schatten',[['none','Kein'],['weak','Leicht'],['medium','Mittel'],['strong','Stark']])}
+   ${sl('radius','Ecken',[[8,'Leicht rund'],[14,'Rund'],[22,'Sehr rund'],[30,'Pille']])}
+   ${cb('tileFrame','Rahmen, Schatten und Ecken auch für Lampen-Kacheln')}</div>
   <div><h3 class="dh3">Lampen-Symbole</h3>${sl('dots','Wo',[['group','In der Raum-Kachel'],['row','Eigene Zeile über der Kachel'],['off','Ausblenden']])}${sl('dotIcon','Aussehen',[['circle','Punkt'],['bulb','Glühbirne'],['lamp','Symbol der Lampe']])}${sl('dotSize','Größe',[[14,'Klein'],[18,'Mittel'],[24,'Groß']])}${sl('dotColor','Farbe, wenn an',[['amber','Bernstein'],['yellow','Gelb'],['orange','Orange'],['white','Weiß'],['light','Farbe der Lampe']])}</div>
   <div><h3 class="dh3">Lampen-Kacheln</h3>${sl('lampCols','Pro Zeile',[[12,'1'],[6,'2'],[4,'3'],[3,'4']])}${sl('lampLayout','Aufbau',[['default','Standard'],['horizontal','Waagrecht'],['vertical','Senkrecht']])}<h3 class="dh3">Szenen-Knöpfe</h3>${sl('sceneAlign','Ausrichtung',[['center','Mitte'],['start','Links']])}</div>
   <div style="grid-column:1/-1"><h3 class="dh3">Brandmelder</h3><div class="row" style="gap:14px">${sl('smokeMode','Darstellung',[['text','Text unter dem Raumnamen'],['chip','Symbol mit Farbe']])}${E.smokeMode==='chip'||(!room&&G.smokeMode==='chip')?cb('smokeLabel','Text neben dem Symbol'):''}</div>
@@ -375,7 +390,7 @@ ed.addEventListener('input',e=>{const r=R()[sel],k=e.target.dataset.k,lk=e.targe
  renderPreview()});
 ed.addEventListener('toggle',e=>{if(e.target.id==='dsg'){st.dsgOpen=e.target.open;save()}},true);
 ed.addEventListener('change',e=>{const t=e.target;
- if(t.dataset.st){const k=t.dataset.st;let v=t.type==='checkbox'?t.checked:t.value;if(['dotSize','lampCols','span'].includes(k))v=+v;setStyle(R()[sel],k,v);return}
+ if(t.dataset.st){const k=t.dataset.st;let v=t.type==='checkbox'?t.checked:t.value;if(['dotSize','lampCols','span','borderW','borderAlpha','radius'].includes(k))v=+v;setStyle(R()[sel],k,v);return}
  if(t.dataset.move){const to=+t.value;if(to===st.cur)return;const r=R().splice(sel,1)[0];st.floors[to].rooms.push(r);st.cur=to;sel=st.floors[to].rooms.length-1;all();toast('Raum verschoben');return}
  if(t.tagName==='SELECT'){R()[sel][t.dataset.k]=t.value;output();save();renderPreview()}else refreshEnts()});
 ed.addEventListener('click',async e=>{const r=R()[sel],t=e.target;

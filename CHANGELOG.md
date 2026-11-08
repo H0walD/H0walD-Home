@@ -1,5 +1,18 @@
 # Änderungen
 
+## 1.5.0 – Rahmen, Schatten und Ecken
+
+### Neu
+- **Rahmenbreite** (kein Rahmen bis 4 px), **Rahmenfarbe** per Farbwähler und **Deckkraft** des Rahmens im Kachel-Design.
+- **Schatten** in vier Stufen: kein, leicht, mittel, stark.
+- **Ecken** von leicht rund bis Pille.
+- Rahmen, Schatten und Ecken gelten auf Wunsch auch für die **Lampen-Kacheln**.
+- **Breite im Dashboard** wie in Home Assistant: Einfach, Doppelt, Dreifach, Volle Breite.
+- Wie alle Design-Einstellungen für **alle Räume gleichzeitig** („Für alle Räume“) oder nur für einen Raum.
+
+### Behoben
+- Einstellungen, die direkt in Home Assistant unter „Abschnitt anpassen“ gemacht wurden (z. B. **Hintergrund** oder **Breite**), gingen beim Speichern aus dem Editor verloren. Sie bleiben jetzt erhalten.
+
 ## 1.4.0 – Brandmelder-Symbole, Lampengruppen und Lampen entfernen
 
 ### Neu
