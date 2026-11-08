@@ -1,4 +1,4 @@
-/*! H0walD Home 1.3.0 · Dashboard-Editor für Home Assistant · MIT-Lizenz
+/*! H0walD Home 1.3.1 · Dashboard-Editor für Home Assistant · MIT-Lizenz
  *  Enthält js-yaml 4.1.0 (MIT, github.com/nodeca/js-yaml) */
 (function(){
 /*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
@@ -503,13 +503,22 @@ function roomForArea(id,create){const a=areaById(id);if(!a)return null;let r=nul
  const fl=editorFloorFor(a.floor_id?REG.floors.find(f=>f.floor_id===a.floor_id):null);
  r={areaId:id,title:a.name,kind:'Raum',smoke:[],temp:'',hum:'',group:'',groupName:'Ganzer Raum',icon:a.icon||'mdi:lightbulb-group',helper:'',lamps:[],scenes:defScenes(),origGroup:TG};r.helper=uniqHelper('lampen_'+slug(a.name),r);fl.rooms.push(r);return r}
 function floorOfRoom(r){return st.floors.find(f=>f.rooms.includes(r))}
+function syncRoomLight(e,from,to){const ra=from&&roomForArea(from,false);if(ra){ra.lamps=ra.lamps.filter(l=>l.entity!==e);if(ra.group===e)ra.group=''}
+ const rb=to&&roomForArea(to,true);if(rb&&rb.group!==e&&!rb.lamps.some(l=>l.entity===e)){rb.lamps=rb.lamps.filter(l=>l.entity);rb.lamps.push({entity:e,name:'',icon:''})}}
 async function moveLight(e,to){const en=REG.ents.find(x=>x.entity_id===e);const from=effArea(en);if(to===from)return;
  if(!to&&REG.devArea[en.device_id]){toast('Diese Lampe erbt den Bereich von ihrem Gerät. Bitte einen anderen Bereich wählen.');renderMgr();return}
- try{await ws('config/entity_registry/update',{entity_id:e,area_id:to||null})}catch(err){toast('Verschieben fehlgeschlagen: '+(err&&err.message||err));renderMgr();return}
- en.area_id=to||null;if(to&&REG.devArea[en.device_id]===to)en.area_id=to;
- const ra=from&&roomForArea(from,false);if(ra){ra.lamps=ra.lamps.filter(l=>l.entity!==e);if(ra.group===e)ra.group=''}
- const rb=to&&roomForArea(to,true);if(rb&&rb.group!==e&&!rb.lamps.some(l=>l.entity===e)){rb.lamps=rb.lamps.filter(l=>l.entity);rb.lamps.push({entity:e,name:'',icon:''})}
- renderMgr();all();toast(`${fname(e)} → ${to?(areaById(to)||{}).name:'kein Bereich'}`)}
+ const before={};regLights().forEach(x=>before[x.entity_id]=effArea(x));let viaDev=false;
+ try{await ws('config/entity_registry/update',{entity_id:e,area_id:to||null})}
+ catch(err){
+  /* Entitäten ohne eigenen Namen dürfen keinen eigenen Bereich haben: dann das Gerät verschieben */
+  if(!en.device_id||!to){toast('Verschieben fehlgeschlagen: '+(err&&err.message||err));renderMgr();return}
+  try{await ws('config/device_registry/update',{device_id:en.device_id,area_id:to});viaDev=true}
+  catch(err2){toast('Verschieben fehlgeschlagen: '+(err2&&err2.message||err2));renderMgr();return}}
+ try{await loadReg()}catch(_){en.area_id=viaDev?null:(to||null);if(viaDev)REG.devArea[en.device_id]=to}
+ const moved=regLights().filter(x=>(before[x.entity_id]||'')!==effArea(x)).map(x=>x.entity_id);if(!moved.includes(e))moved.push(e);
+ moved.forEach(id=>syncRoomLight(id,before[id]||'',id===e?(to||''):effArea(REG.ents.find(x=>x.entity_id===id))));
+ const an=to?(areaById(to)||{}).name:'kein Bereich';
+ renderMgr();all();toast(viaDev?`${fname(e)} → ${an} (über das Gerät${moved.length>1?`, ${moved.length} Lampen verschoben`:''})`:`${fname(e)} → ${an}`)}
 $('areaMgr').addEventListener('change',async e=>{const t=e.target;
  if(t.dataset.lmove)await moveLight(t.dataset.lmove,t.value);
  else if(t.dataset.ladd&&t.value)await moveLight(t.value,t.dataset.ladd);

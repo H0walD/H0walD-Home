@@ -1,5 +1,10 @@
 # Änderungen
 
+## 1.3.1 – Lampen ohne eigenen Namen verschieben
+
+### Behoben
+- **„Verschieben fehlgeschlagen: An entity without a name of its own cannot have an area of its own“:** Manche Lampen haben in Home Assistant keinen eigenen Namen, sondern nutzen den Namen ihres Geräts. Solche Lampen dürfen keinen eigenen Bereich haben. Der Editor verschiebt in diesem Fall jetzt automatisch das **Gerät** in den neuen Bereich. Hat das Gerät mehrere Lampen, wandern alle mit, und die Meldung sagt, wie viele es waren. Die Räume im Editor werden für alle verschobenen Lampen angepasst.
+
 ## 1.3.0 – Kachel-Design und neues Dashboard per Klick
 
 ### Neu
