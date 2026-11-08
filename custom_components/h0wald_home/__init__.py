@@ -32,10 +32,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         require_admin=True,
         config={},
     )
+    # Lädt die Datei auch in Dashboards, damit die Karte custom:h0wald-home-card verfügbar ist
+    frontend.add_extra_js_url(hass, f"{STATIC_URL}/{ELEMENT}.js?v={VERSION}")
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Panel entfernen."""
     frontend.async_remove_panel(hass, PANEL_URL)
+    frontend.remove_extra_js_url(hass, f"{STATIC_URL}/{ELEMENT}.js?v={VERSION}")
     return True

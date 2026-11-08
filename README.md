@@ -29,13 +29,17 @@
 
 ## Funktionen
 
-- **Aus Home Assistant lesen:** Geschosse, Bereiche, Lampen (inkl. Licht-Gruppen), Temperatur- und Feuchte-Fühler sowie Brandmelder werden automatisch zugeordnet.
+- **Aus Home Assistant lesen:** Geschosse, Bereiche, Lampen (inkl. Licht-Gruppen, in den Vorschlagslisten mit Namen), Temperatur- und Feuchte-Fühler sowie Brandmelder werden automatisch zugeordnet.
 - **Bestehendes Dashboard laden** und weiter bearbeiten. Fremde Ansichten und Abschnitte bleiben unverändert.
 - **Geschosse** anlegen, benennen, sortieren, Symbol wählen.
 - **Räume** anlegen, sortieren und einem Geschoss zuordnen.
+- **Ziehen & Ablegen:** Geschosse, Räume, Lampen und Szenen am Griff ⠿ sortieren (auch per Touch und mit den Pfeiltasten). Einen Raum auf ein Geschoss ziehen verschiebt ihn, eine Lampe auf einen anderen Raum ziehen verschiebt sie, eine Szene auf einen Raum ziehen kopiert sie.
+- **Live-Vorschau** des gewählten Raums mit echten Zuständen aus Home Assistant. Antippen eines Elements springt zum passenden Feld, Lampen und Szenen lassen sich direkt in der Vorschau sortieren.
 - **Szenen-Editor:** Name, Symbol, Helligkeit, Farbtemperatur oder eine HA-Szene.
 - **Im Dashboard speichern**, vorher wird automatisch eine Sicherung angelegt (herunterladbar).
 - **Fehlende Helfer anlegen** per Klick, ohne `configuration.yaml`.
+- **HA-Bereiche verwalten:** Lampen per Ziehen oder Auswahl in andere Bereiche verschieben, Lampen ohne Bereich zuordnen, Bereiche in ein anderes Geschoss legen, neue Bereiche und Geschosse anlegen. Der Editor zieht die Räume automatisch nach.
+- **Editor als Tab im Dashboard:** Auf Wunsch kommt der Editor als eigener Tab (nur für dich sichtbar) direkt in dein Dashboard. Als Karte heißt er `custom:h0wald-home-card`.
 - Hell- und Dunkelmodus wie in Home Assistant.
 
 ## Voraussetzungen
@@ -67,11 +71,13 @@ Den Ordner `custom_components/h0wald_home` nach `/config/custom_components/` kop
 ## Benutzung
 
 1. **Dashboard wählen** und **Dashboard laden**, wenn du ein bestehendes weiter bearbeiten willst.
-2. **Geschosse & Bereiche übernehmen:** legt aus deinen HA-Bereichen Geschosse und Räume an. Bereits vorhandene Räume (gleicher Name) werden nur ergänzt, nichts wird überschrieben. Bereiche ohne Lampen werden übersprungen.
-3. **Geschosse bearbeiten:** In der Leiste wählen oder mit **+ Geschoss** anlegen. Name, Pfad und Symbol festlegen, mit ← → sortieren.
-4. **Räume bearbeiten:** Lampengruppe, Lampen, Fühler, Brandmelder und Szenen prüfen. Über **Geschoss** verschiebst du einen Raum.
-5. **Fehlende Helfer anlegen:** erstellt pro Raum einen Schalter `input_boolean.lampen_…`, der sich merkt, ob die Lampen aufgeklappt sind.
-6. **Im Dashboard speichern:** zweimal klicken zum Bestätigen. Die alte Fassung kannst du danach unter **Sicherung herunterladen** holen.
+2. **Bereiche aufräumen (optional):** Unter „HA-Bereiche, Lampen & Geschosse verwalten“ Lampen und Bereiche richtig zuordnen. Das wird sofort in Home Assistant gespeichert.
+3. **Geschosse & Bereiche übernehmen:** legt aus deinen HA-Bereichen Geschosse und Räume an. Bereits vorhandene Räume (gleicher Name) werden nur ergänzt, nichts wird überschrieben. Bereiche ohne Lampen werden übersprungen.
+4. **Geschosse bearbeiten:** In der Leiste wählen oder mit **+ Geschoss** anlegen. Name, Pfad und Symbol festlegen, mit ← → sortieren.
+5. **Räume bearbeiten:** Lampengruppe, Lampen, Fühler, Brandmelder und Szenen prüfen. Sortieren geht am Griff ⠿ per Ziehen. Einen Raum verschiebst du, indem du ihn auf ein Geschoss oben ziehst (oder über **Geschoss**).
+6. **Fehlende Helfer anlegen:** erstellt pro Raum einen Schalter `input_boolean.lampen_…`, der sich merkt, ob die Lampen aufgeklappt sind.
+7. **Editor als Tab:** Haken bei „Editor als Tab im Dashboard“ setzen, dann ist der Editor nach dem Speichern auch im Dashboard selbst erreichbar (nur für den aktuellen Benutzer sichtbar).
+8. **Im Dashboard speichern:** zweimal klicken zum Bestätigen. Die alte Fassung kannst du danach unter **Sicherung herunterladen** holen.
 
 **Tipps**
 
